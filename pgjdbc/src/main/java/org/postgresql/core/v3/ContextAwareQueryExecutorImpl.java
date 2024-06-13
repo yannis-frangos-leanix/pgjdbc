@@ -19,7 +19,7 @@ import java.util.Properties;
 
 public class ContextAwareQueryExecutorImpl extends QueryExecutorImpl {
 
-  private final Context context = new Context("", 0);
+  private final Context context = new Context("", 0, null);
 
   public ContextAwareQueryExecutorImpl(
       PGStream pgStream,
@@ -40,6 +40,10 @@ public class ContextAwareQueryExecutorImpl extends QueryExecutorImpl {
       boolean adaptiveFetch) throws SQLException {
     super.execute(queries, parameterLists, batchHandler, maxRows, fetchSize, flags, adaptiveFetch);
     context.sqlCount += queries.length;
+  }
+
+  public void setContextUserInfo(Object userInfo) {
+    context.userInfo = userInfo;
   }
 
   @Override
@@ -67,15 +71,18 @@ public class ContextAwareQueryExecutorImpl extends QueryExecutorImpl {
   public static class Context {
     private String sessionOwnerIdentifier = "";
     private int sqlCount;
+    private Object userInfo;
 
-    public Context(String sessionOwnerIdentifier, int sqlCount) {
+    public Context(String sessionOwnerIdentifier, int sqlCount, Object userInfo) {
       this.sessionOwnerIdentifier = sessionOwnerIdentifier;
       this.sqlCount = sqlCount;
+      this.userInfo = userInfo;
     }
 
     private Context(Context context) {
       this.sessionOwnerIdentifier = context.sessionOwnerIdentifier;
       this.sqlCount = context.sqlCount;
+      this.userInfo = context.userInfo;
     }
 
     public String getSessionOwnerIdentifier() {
@@ -84,6 +91,10 @@ public class ContextAwareQueryExecutorImpl extends QueryExecutorImpl {
 
     public void setSessionOwnerIdentifier(String sessionOwnerIdentifier) {
       this.sessionOwnerIdentifier = sessionOwnerIdentifier;
+    }
+
+    public Object getUserInfo() {
+      return userInfo;
     }
 
     public int getSqlCount() {
