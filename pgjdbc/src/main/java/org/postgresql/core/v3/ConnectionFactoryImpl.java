@@ -314,7 +314,7 @@ public class ConnectionFactoryImpl extends ConnectionFactory {
         // CheckerFramework can't infer newStream is non-nullable
         castNonNull(newStream);
         // Do final startup.
-        QueryExecutor queryExecutor = new QueryExecutorImpl(newStream, cancelSignalTimeout, info);
+        QueryExecutor queryExecutor = new ContextAwareQueryExecutorImpl(newStream, cancelSignalTimeout, info);
 
         // Check Primary or Secondary
         HostStatus hostStatus = HostStatus.ConnectOK;
